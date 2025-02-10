@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghi Điểm Tiến Lên</title>
+    <style>
+        .player {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .history {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ghi Điểm Tiến Lên</h1>
+    
+    <div id="players">
+        <div class="player">
+            <label>Người chơi 1:</label>
+            <input type="text" id="player1" placeholder="Tên">
+            <input type="number" id="score1" placeholder="Điểm">
+        </div>
+        <div class="player">
+            <label>Người chơi 2:</label>
+            <input type="text" id="player2" placeholder="Tên">
+            <input type="number" id="score2" placeholder="Điểm">
+        </div>
+        <div class="player">
+            <label>Người chơi 3:</label>
+            <input type="text" id="player3" placeholder="Tên">
+            <input type="number" id="score3" placeholder="Điểm">
+        </div>
+        <div class="player">
+            <label>Người chơi 4:</label>
+            <input type="text" id="player4" placeholder="Tên">
+            <input type="number" id="score4" placeholder="Điểm">
+        </div>
+    </div>
+
+    <button onclick="saveGame()">Lưu Ván</button>
+    <button onclick="resetScores()">Đặt Lại</button>
+
+    <div class="history">
+        <h2>Lịch Sử Các Ván</h2>
+        <div id="gameHistory"></div>
+    </div>
+
+    <script>
+        // Khởi tạo mảng lưu trữ lịch sử
+        let gameHistory = JSON.parse(localStorage.getItem('tienlenHistory')) || [];
+
+        // Hàm lưu ván đấu
+        function saveGame() {
+            const game = {
+                timestamp: new Date().toLocaleString(),
+                players: []
+            };
+
+            // Lưu thông tin người chơi và điểm
+            for (let i = 1; i <= 4; i++) {
+                const name = document.getElementById(`player${i}`).value;
+                const score = parseInt(document.getElementById(`score${i}`).value) || 0;
+                game.players.push({ name, score });
+            }
+
+            // Thêm ván mới vào lịch sử
+            gameHistory.push(game);
+            localStorage.setItem('tienlenHistory', JSON.stringify(gameHistory));
+
+            // Hiển thị lịch sử
+            displayHistory();
+        }
+
+        // Hàm hiển thị lịch sử
+        function displayHistory() {
+            const historyDiv = document.getElementById('gameHistory');
+            historyDiv.innerHTML = '';
+
+            gameHistory.forEach((game, index) => {
+                const gameDiv = document.createElement('div');
+                gameDiv.innerHTML = `
+                    <h3>Ván ${index + 1} - ${game.timestamp}</h3>
+                    ${game.players.map(player => 
+                        `<p>${player.name}: ${player.score} điểm</p>`
+                    ).join('')}
+                    <hr>
+                `;
+                historyDiv.appendChild(gameDiv);
+            });
+        }
+
+        // Hàm đặt lại điểm
+        function resetScores() {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`score${i}`).value = '';
+            }
+        }
+
+        // Hiển thị lịch sử khi tải trang
+        displayHistory();
+    </script>
+</body>
+</html> 
